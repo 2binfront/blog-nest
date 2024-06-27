@@ -1,13 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseFilters } from '@nestjs/common';
 import { ArticleService } from './article.service';
-import { CreateArticleDto, UpdateArticleDto } from './article.dto';
-
+import { HttpExceptionFilter } from '../common/filters/http-exception.filter';
+import { Article } from './article.schema';
 @Controller('article')
+@UseFilters(new HttpExceptionFilter())
 export class ArticleController {
   constructor(private readonly articleService: ArticleService) {}
 
   @Post()
-  create(@Body() createArticleDto: CreateArticleDto) {
+  create(@Body() createArticleDto: Article) {
     return this.articleService.create(createArticleDto);
   }
 
@@ -18,16 +19,16 @@ export class ArticleController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.articleService.findOne(+id);
+    return this.articleService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateArticleDto: UpdateArticleDto) {
-    return this.articleService.update(+id, updateArticleDto);
+  update(@Param('id') id: string, @Body() updateArticleDto: Article) {
+    return this.articleService.update(id, updateArticleDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.articleService.remove(+id);
+    return this.articleService.remove(id);
   }
 }

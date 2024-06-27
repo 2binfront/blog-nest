@@ -1,26 +1,63 @@
-import { Injectable } from '@nestjs/common';
-import { CreateArticleDto, UpdateArticleDto } from './article.dto';
-
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import mongoose, { Model } from 'mongoose';
+import { Article, ArticleMeta, ArticleContent, ArticleContentDocument, ArticleMetaDocument } from './article.schema';
+import DeleteResult from 'mongoose';
 @Injectable()
 export class ArticleService {
-  create(createArticleDto: CreateArticleDto) {
-    console.log(createArticleDto);
-    return 'This action adds a new article';
+  @InjectModel('ArticleMeta') private metaModel: Model<ArticleMetaDocument>;
+  @InjectModel('ArticleContent') private contentModel: Model<ArticleContentDocument>;
+
+  async create(createArticleDto: Article) {
+    try {
+      console.log(createArticleDto);
+      createArticleDto.create_time = new Date();
+      createArticleDto.modified_time = new Date();
+      const { content, ...resArticle } = createArticleDto;
+      const res = await this.metaModel.create(resArticle);
+      const res2 = await this.contentModel.create({ articleId: res._id, content: content });
+      return res2;
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
   }
 
-  findAll() {
-    return `This action returns all article`;
+  async findAll() {
+    const res = await this.metaModel.find();
+    return res;
   }
 
-  findOne(id: number) {
+  async findOne(id: string) {
+    const res = await this.contentModel.find({ articleId: id });
     return `This action returns a #${id} article`;
   }
 
-  update(id: number, updateArticleDto: UpdateArticleDto) {
-    return `This action updates a #${id} article`;
+  async update(id: string, updateArticleDto: Article) {
+    updateArticleDto.modified_time = new Date();
+    await this.metaModel
+      .updateOne(
+        { _id: id },
+        {
+          $set: {
+            title: updateArticleDto.title,
+            modified_time: updateArticleDto.modified_time,
+            category: updateArticleDto.category,
+            tags: updateArticleDto.tags,
+          },
+        },
+      )
+      .exec();
+    const res = await this.contentModel.updateOne({ articleId: id }, updateArticleDto);
+
+    return res;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} article`;
+  async remove(id: string) {
+    const res = await this.contentModel.deleteOne({ articleId: id });
+    const res2 = await this.metaModel.deleteOne({ _id: id }).exec();
+    if (res2.deletedCount === 0) {
+      throw new NotFoundException(`Article with ID ${id} not found`);
+    }
+    return { deleted: true };
   }
 }
