@@ -7,30 +7,29 @@ export type ArticleContentDocument = ArticleContent & mongoose.Document;
 export class Article {
   title: string;
   content: string;
-  create_time?: Date;
-  modified_time?: Date;
+  //   create_time?: Date;
+  //   modified_time?: Date;
   category: string;
   tags: [string] | [];
 }
 
-@Schema()
+@Schema({ timestamps: true })
 export class ArticleMeta {
   @Prop({ required: true })
   @IsNotEmpty()
   title: string;
   //   @Prop({ required: true })
   //   content: string;
-  @Prop({ required: true })
-  create_time: Date;
-  @Prop({ required: true })
-  modified_time: Date;
+  //   @Prop({ required: true })
+  //   create_time: Date;
+  //   @Prop({ required: true })
+  //   modified_time: Date;
   @Prop({ required: true })
   category: string;
   @Prop({ required: true })
   tags: [string] | [];
 }
-
-@Schema()
+@Schema({ timestamps: true })
 export class ArticleContent {
   @Prop({ required: true })
   @IsNotEmpty()

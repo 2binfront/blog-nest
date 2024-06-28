@@ -11,8 +11,8 @@ export class ArticleService {
   async create(createArticleDto: Article) {
     try {
       console.log(createArticleDto);
-      createArticleDto.create_time = new Date();
-      createArticleDto.modified_time = new Date();
+      //   createArticleDto.create_time = new Date();
+      //   createArticleDto.modified_time = new Date();
       const { content, ...resArticle } = createArticleDto;
       const res = await this.metaModel.create(resArticle);
       const res2 = await this.contentModel.create({ articleId: res._id, content: content });
@@ -29,26 +29,25 @@ export class ArticleService {
 
   async findOne(id: string) {
     const res = await this.contentModel.find({ articleId: id });
-    return `This action returns a #${id} article`;
+    return res;
   }
 
   async update(id: string, updateArticleDto: Article) {
-    updateArticleDto.modified_time = new Date();
-    await this.metaModel
+    // updateArticleDto.modified_time = new Date();
+    const res0 = await this.metaModel
       .updateOne(
         { _id: id },
         {
           $set: {
             title: updateArticleDto.title,
-            modified_time: updateArticleDto.modified_time,
+            // modified_time: updateArticleDto.modified_time,
             category: updateArticleDto.category,
             tags: updateArticleDto.tags,
           },
         },
       )
       .exec();
-    const res = await this.contentModel.updateOne({ articleId: id }, updateArticleDto);
-
+    const res = await this.contentModel.updateOne({ articleId: id }, updateArticleDto).exec();
     return res;
   }
 
