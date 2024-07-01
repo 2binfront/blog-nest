@@ -28,7 +28,7 @@ export class ArticleService {
   }
 
   async findOne(id: string) {
-    const res = await this.contentModel.find({ articleId: id });
+    const res = await this.contentModel.find({ articleId: id }).exec();
     return res;
   }
 
@@ -52,7 +52,7 @@ export class ArticleService {
   }
 
   async remove(id: string) {
-    const res = await this.contentModel.deleteOne({ articleId: id });
+    const res = await this.contentModel.deleteOne({ articleId: id }).exec();
     const res2 = await this.metaModel.deleteOne({ _id: id }).exec();
     if (res2.deletedCount === 0) {
       throw new NotFoundException(`Article with ID ${id} not found`);

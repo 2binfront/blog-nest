@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseFilters } from '@
 import { ArticleService } from './article.service';
 import { HttpExceptionFilter } from '../common/filters/http-exception.filter';
 import { Article } from './article.schema';
+import { Public } from 'src/auth/constants';
 @Controller('article')
 @UseFilters(new HttpExceptionFilter())
 export class ArticleController {
@@ -12,11 +13,13 @@ export class ArticleController {
     return this.articleService.create(createArticleDto);
   }
 
+  @Public()
   @Get()
   findAll() {
     return this.articleService.findAll();
   }
 
+  @Public()
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.articleService.findOne(id);
