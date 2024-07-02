@@ -7,8 +7,8 @@ export type ArticleContentDocument = ArticleContent & mongoose.Document;
 export class Article {
   title: string;
   content: string;
-  //   create_time?: Date;
-  //   modified_time?: Date;
+  createAt?: Date;
+  modifiedAt?: Date;
   category: string;
   tags: [string] | [];
 }
@@ -20,10 +20,8 @@ export class ArticleMeta {
   title: string;
   //   @Prop({ required: true })
   //   content: string;
-  //   @Prop({ required: true })
-  //   create_time: Date;
-  //   @Prop({ required: true })
-  //   modified_time: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
   @Prop({ required: true })
   category: string;
   @Prop({ required: true })

@@ -9,6 +9,7 @@ export class LoggerMiddleware implements NestMiddleware {
       method: req.method,
       url: req.originalUrl,
       body: req.body,
+      res: res.statusCode,
     };
     Logger.verbose({
       message: 'HttpRequest',

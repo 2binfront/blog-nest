@@ -21,7 +21,7 @@ export class ArticleController {
 
   @Public()
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: string): any {
     return this.articleService.findOne(id);
   }
 

@@ -1,8 +1,9 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import { Article, ArticleMeta, ArticleContent, ArticleContentDocument, ArticleMetaDocument } from './article.schema';
 import DeleteResult from 'mongoose';
+import { log } from 'console';
 @Injectable()
 export class ArticleService {
   @InjectModel('ArticleMeta') private metaModel: Model<ArticleMetaDocument>;
@@ -28,8 +29,18 @@ export class ArticleService {
   }
 
   async findOne(id: string) {
-    const res = await this.contentModel.find({ articleId: id }).exec();
-    return res;
+    const res1 = await this.contentModel.find({ articleId: id }).exec();
+    const res2 = await this.metaModel.find({ _id: id }).exec();
+    const { category, tags, updatedAt, createdAt, title, _id } = res2[0];
+    return {
+      content: res1[0].content,
+      category,
+      updatedAt,
+      tags,
+      title,
+      createdAt,
+      _id,
+    };
   }
 
   async update(id: string, updateArticleDto: Article) {
