@@ -1,20 +1,40 @@
-import { Injectable, NestMiddleware } from '@nestjs/common';
+import { Inject, Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
-import { Logger } from '@nestjs/common';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { Logger } from 'winston';
 
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
+  constructor(@Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger) {}
   use(req: Request, res: Response, next: NextFunction) {
-    const metadata = {
-      method: req.method,
-      url: req.originalUrl,
-      body: req.body,
-      res: res.statusCode,
+    // 1. 保存原始的 send 方法
+    const originalSend = res.send;
+
+    // 2. 创建一个变量来存储响应数据
+    let responseBody: any;
+
+    // 3. 重写 send 方法以捕获响应数据
+    res.send = (body: any) => {
+      responseBody = body;
+      return originalSend.call(res, body);
     };
-    Logger.verbose({
-      message: 'HttpRequest',
-      metadata,
+
+    // 4. 监听 'finish' 事件以获取响应状态码和内容
+    res.on('finish', () => {
+      const metadata = {
+        method: req.method,
+        url: req.originalUrl,
+        body: req.body,
+        statusCode: res.statusCode,
+        response: responseBody,
+      };
+      this.logger.http({
+        message: 'HttpRequest',
+        metadata,
+      });
     });
+
+    // 5. 调用 next 中间件
     next();
   }
 }

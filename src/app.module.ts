@@ -8,8 +8,48 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { WinstonModule } from 'nest-winston';
+import * as WinstonMongodb from 'winston-mongodb';
+import * as winston from 'winston';
 @Module({
   imports: [
+    WinstonModule.forRoot({
+      // options
+      format: winston.format.combine(
+        winston.format.timestamp({
+          format: 'YYYY-MM-DD HH:mm:ss',
+        }),
+        winston.format.prettyPrint(),
+      ),
+      transports: [
+        new winston.transports.Console({
+          level: 'verbose',
+          format: winston.format.combine(winston.format.timestamp()),
+        }),
+        //   保存到数据库
+        new WinstonMongodb.MongoDB({
+          level: process.env.WINSTON_LOGGER_LEVEL_MONGO || 'verbose',
+          db: `mongodb://${process.env.MONGO_HOST || '127.0.0.1'}:${process.env.MONGO_PORT}/${process.env.MONGO_DATABASE_WINSTON || 'app-log'}`,
+          options: { useNewUrlParser: true, useUnifiedTopology: true },
+        }),
+        // // 输出文件
+        // new winston.transports.File({
+        //   //定义输出日志文件
+        //   filename: 'logFile/combined.log',
+        //   level: 'http',
+        // }),
+        // new winston.transports.File({
+        //   filename: 'logFile/errors.log',
+        //   level: 'error',
+        // }),
+        // new winston.transports.File({
+        //   filename: 'logFile/warning.log',
+        //   level: 'warning',
+        // }),
+      ],
+      // 未捕获的异常
+      exceptionHandlers: [new winston.transports.File({ filename: 'logFile/exceptions.log' })],
+    }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService): any => ({
@@ -23,10 +63,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       }),
       inject: [ConfigService],
     }),
-    ArticleModule,
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService): any => ({
@@ -34,7 +70,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       }),
       inject: [ConfigService],
     }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     AuthModule,
+    ArticleModule,
     UsersModule,
   ],
   controllers: [AppController],
