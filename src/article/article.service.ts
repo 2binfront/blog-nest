@@ -2,18 +2,18 @@ import { BadRequestException, Injectable, Logger, NotFoundException } from '@nes
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import { Article, ArticleMeta, ArticleContent, ArticleContentDocument, ArticleMetaDocument } from './article.schema';
-import DeleteResult from 'mongoose';
-import { log } from 'console';
+import { CategoryService } from 'src/category/category.service';
+import { TagService } from 'src/tag/tag.service';
 @Injectable()
 export class ArticleService {
   @InjectModel('ArticleMeta') private metaModel: Model<ArticleMetaDocument>;
   @InjectModel('ArticleContent') private contentModel: Model<ArticleContentDocument>;
-
+  constructor(
+    private categoryService: CategoryService,
+    private tagService: TagService,
+  ) {}
   async create(createArticleDto: Article) {
     try {
-      console.log(createArticleDto);
-      //   createArticleDto.create_time = new Date();
-      //   createArticleDto.modified_time = new Date();
       const { content, ...resArticle } = createArticleDto;
       const res = await this.metaModel.create(resArticle);
       const res2 = await this.contentModel.create({ articleId: res._id, content: content });
@@ -44,14 +44,12 @@ export class ArticleService {
   }
 
   async update(id: string, updateArticleDto: Article) {
-    // updateArticleDto.modified_time = new Date();
-    const res0 = await this.metaModel
+    await this.metaModel
       .updateOne(
         { _id: id },
         {
           $set: {
             title: updateArticleDto.title,
-            // modified_time: updateArticleDto.modified_time,
             category: updateArticleDto.category,
             tags: updateArticleDto.tags,
           },

@@ -26,7 +26,7 @@ export class AuthGuard implements CanActivate {
     }
     try {
       const payload = await this.jwtService.verifyAsync(token, {
-        secret: this.configService.get('JWT_AUTH'),
+        secret: this.configService.get('JWT_SECRET'),
       });
       // 💡 在这里我们将 payload 挂载到请求对象上
       // 以便我们可以在路由处理器中访问它

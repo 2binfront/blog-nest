@@ -9,6 +9,10 @@ import { UsersModule } from './users/users.module';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { WinstonModule } from 'nest-winston';
+import { TagController } from './tag/tag.controller';
+import { TagService } from './tag/tag.service';
+import { CategoryModule } from './category/category.module';
+import { TagModule } from './tag/tag.module';
 import * as WinstonMongodb from 'winston-mongodb';
 import * as winston from 'winston';
 @Module({
@@ -50,19 +54,19 @@ import * as winston from 'winston';
       // 未捕获的异常
       exceptionHandlers: [new winston.transports.File({ filename: 'logFile/exceptions.log' })],
     }),
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: (configService: ConfigService): any => ({
-        type: 'postgres',
-        host: configService.get<string>('POSTGRES_HOST'),
-        port: configService.get<string>('POSTGRES_PORT'),
-        username: configService.get<string>('POSTGRES_USER'),
-        password: configService.get<string>('POSTGRES_PASSWORD'),
-        database: configService.get<string>('POSTGRES_DATABASE'),
-        entities: ['**/*.entity{.ts,.js}'],
-      }),
-      inject: [ConfigService],
-    }),
+    // TypeOrmModule.forRootAsync({
+    //   imports: [ConfigModule],
+    //   useFactory: (configService: ConfigService): any => ({
+    //     type: 'postgres',
+    //     host: configService.get<string>('POSTGRES_HOST'),
+    //     port: configService.get<string>('POSTGRES_PORT'),
+    //     username: configService.get<string>('POSTGRES_USER'),
+    //     password: configService.get<string>('POSTGRES_PASSWORD'),
+    //     database: configService.get<string>('POSTGRES_DATABASE'),
+    //     entities: ['**/*.entity{.ts,.js}'],
+    //   }),
+    //   inject: [ConfigService],
+    // }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService): any => ({
@@ -76,6 +80,8 @@ import * as winston from 'winston';
     AuthModule,
     ArticleModule,
     UsersModule,
+    TagModule,
+    CategoryModule,
   ],
   controllers: [AppController],
   providers: [AppService],
