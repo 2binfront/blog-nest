@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CategoryDocument } from './category.schema';
@@ -11,9 +11,8 @@ export class CategoryService {
     return this.categoryModel.find().exec();
   }
 
-  create(categories: CategoryDocument[]) {
-    console.log(categories);
-    const res = this.categoryModel.insertMany(categories);
+  create(category: CategoryDocument) {
+    const res = this.categoryModel.insertMany(category);
     return res;
   }
 

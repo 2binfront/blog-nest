@@ -13,12 +13,12 @@ export class CategoryController {
   }
 
   @Post()
-  createCategories(@Body() categories: CategoryDocument[]) {
-    return this.categoryService.create(categories);
+  createCategory(@Body() category: CategoryDocument) {
+    return this.categoryService.create(category);
   }
 
   @Patch()
-  updateCategory(@Param() id: string, @Body() tags: CategoryDocument) {
-    return this.categoryService.patchCategory(id, tags);
+  updateCategory(@Param() id: string, @Body() category: CategoryDocument) {
+    return this.categoryService.patchCategory(id, category);
   }
 }

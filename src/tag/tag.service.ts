@@ -22,4 +22,8 @@ export class TagService {
   findById(id: string) {
     return this.tagModel.find({ _id: id }).exec();
   }
+
+  findMany(ids: string[]) {
+    return this.tagModel.find({ _id: { $in: ids } }).exec();
+  }
 }

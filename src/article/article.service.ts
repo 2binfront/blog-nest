@@ -15,6 +15,12 @@ export class ArticleService {
   async create(createArticleDto: Article) {
     try {
       const { content, ...resArticle } = createArticleDto;
+      const { category, tags } = resArticle;
+      const categoryId = await this.categoryService.findOne(category);
+      const tagIds = await this.tagService.findMany(tags);
+      if (!categoryId && tagIds.length === 0) {
+        throw new BadRequestException('no category or tag found' + tagIds);
+      }
       const res = await this.metaModel.create(resArticle);
       const res2 = await this.contentModel.create({ articleId: res._id, content: content });
       return res2;
