@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 ENV NODE_ENV production
-
+RUN npm config set registry https://registry.npmmirror.com
 # 安装项目依赖
 RUN npm i -g pnpm
 
@@ -35,7 +35,7 @@ COPY . .
 RUN npm run build
 
 # 暴露应用程序端口
-EXPOSE 10010
+EXPOSE 3001
 
 # 启动应用程序
 CMD ["npm","run","start:prod"]

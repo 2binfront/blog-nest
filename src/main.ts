@@ -19,6 +19,6 @@ async function bootstrap() {
   // 替换原有内置logger
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
 
-  await app.listen(10010);
+  await app.listen(3001);
 }
 bootstrap();
