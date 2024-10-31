@@ -15,8 +15,13 @@ import { CategoryModule } from './category/category.module';
 import { TagModule } from './tag/tag.module';
 import * as WinstonMongodb from 'winston-mongodb';
 import * as winston from 'winston';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '../client/public'),
+    }),
     WinstonModule.forRoot({
       // options
       format: winston.format.combine(
