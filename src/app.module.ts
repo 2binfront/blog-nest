@@ -37,11 +37,11 @@ import * as winston from 'winston';
           options: { useNewUrlParser: true, useUnifiedTopology: true },
         }),
         // // 输出文件
-        // new winston.transports.File({
-        //   //定义输出日志文件
-        //   filename: 'logFile/combined.log',
-        //   level: 'http',
-        // }),
+        new winston.transports.File({
+          //定义输出日志文件
+          filename: 'logFile/combined.log',
+          level: 'http',
+        }),
         // new winston.transports.File({
         //   filename: 'logFile/errors.log',
         //   level: 'error',
