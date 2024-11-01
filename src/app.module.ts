@@ -38,7 +38,7 @@ import { join } from 'path';
         //   保存到数据库
         new WinstonMongodb.MongoDB({
           level: process.env.WINSTON_LOGGER_LEVEL_MONGO || 'verbose',
-          db: `mongodb://${process.env.MONGO_HOST || '127.0.0.1'}:${process.env.MONGO_PORT}/${process.env.MONGO_DATABASE_WINSTON || 'app-log'}`,
+          db: `mongodb://${process.env.MONGO_HOST || '127.0.0.1'}:${process.env.MONGO_PORT || 21017}/${process.env.MONGO_DATABASE_WINSTON || 'app-log'}`,
           options: { useNewUrlParser: true, useUnifiedTopology: true },
         }),
         // // 输出文件
