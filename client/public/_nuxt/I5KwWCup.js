@@ -1,0 +1,1 @@
+const r=(a,s="date")=>{const e=new Date(a);let t="";switch(s){case"date":t=e.getFullYear()+"."+(e.getMonth()+1)+"."+e.getDate();break;case"s":t=e.getFullYear()+"."+(e.getMonth()+1)+"."+e.getDate()+" "+e.getHours()+":"+e.getMinutes()+":"+e.getSeconds();break}return t};export{r as f};
