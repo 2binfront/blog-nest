@@ -17,8 +17,15 @@ import * as WinstonMongodb from 'winston-mongodb';
 import * as winston from 'winston';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import configuration from './config/configuration';
+import { PrismaModule } from './common/prisma/prisma.module';
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [configuration],
+    }),
+    PrismaModule,
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '../client/public'),
     }),
@@ -35,12 +42,12 @@ import { join } from 'path';
           level: 'verbose',
           format: winston.format.combine(winston.format.timestamp()),
         }),
-        //   保存到数据库
-        new WinstonMongodb.MongoDB({
-          level: process.env.WINSTON_LOGGER_LEVEL_MONGO || 'verbose',
-          db: `mongodb://${process.env.MONGO_HOST || '127.0.0.1'}:${process.env.MONGO_PORT || 21017}/${process.env.MONGO_DATABASE_WINSTON || 'app-log'}`,
-          options: { useNewUrlParser: true, useUnifiedTopology: true },
-        }),
+        // //   保存到数据库
+        // new WinstonMongodb.MongoDB({
+        //   level: process.env.WINSTON_LOGGER_LEVEL_MONGO || 'verbose',
+        //   db: `mongodb://${process.env.MONGO_HOST || '127.0.0.1'}:${process.env.MONGO_PORT || 21017}/${process.env.MONGO_DATABASE_WINSTON || 'app-log'}`,
+        //   options: { useNewUrlParser: true, useUnifiedTopology: true },
+        // }),
         // // 输出文件
         new winston.transports.File({
           //定义输出日志文件
@@ -72,16 +79,14 @@ import { join } from 'path';
     //   }),
     //   inject: [ConfigService],
     // }),
-    MongooseModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: (configService: ConfigService): any => ({
-        uri: `mongodb://${configService.get<string>('MONGO_HOST')}:${configService.get<string>('MONGO_PORT')}/${configService.get<string>('MONGO_DATABASE')}`,
-      }),
-      inject: [ConfigService],
-    }),
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
+    // MongooseModule.forRootAsync({
+    //   imports: [ConfigModule],
+    //   useFactory: (configService: ConfigService): any => ({
+    //     uri: `mongodb://${configService.get<string>('MONGO_HOST')}:${configService.get<string>('MONGO_PORT')}/${configService.get<string>('MONGO_DATABASE')}`,
+    //   }),
+    //   inject: [ConfigService],
+    // }),
+
     AuthModule,
     ArticleModule,
     UsersModule,

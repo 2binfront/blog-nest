@@ -2,11 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { TagDocument } from './tag.schema';
+import { PrismaService } from 'src/common/prisma/prisma.service';
 
 @Injectable()
 export class TagService {
-  @InjectModel('Tag') private tagModel: Model<TagDocument>;
-
+  constructor(private prisma: PrismaService) {}
   getTags() {
     return this.tagModel.find().exec();
   }
