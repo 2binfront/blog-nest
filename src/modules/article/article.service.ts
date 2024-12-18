@@ -2,8 +2,8 @@ import { BadRequestException, Injectable, Logger, NotFoundException } from '@nes
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import { Article, ArticleMeta, ArticleContent, ArticleContentDocument, ArticleMetaDocument } from './article.schema';
-import { CategoryService } from 'src/category/category.service';
-import { TagService } from 'src/tag/tag.service';
+import { CategoryService } from 'src/modules/category/category.service';
+import { TagService } from 'src/modules/tag/tag.service';
 @Injectable()
 export class ArticleService {
   @InjectModel('ArticleMeta') private metaModel: Model<ArticleMetaDocument>;

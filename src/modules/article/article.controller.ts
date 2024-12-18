@@ -1,8 +1,8 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseFilters } from '@nestjs/common';
 import { ArticleService } from './article.service';
-import { HttpExceptionFilter } from '../common/filters/http-exception.filter';
+import { HttpExceptionFilter } from '../../common/filters/http-exception.filter';
 import { Article } from './article.schema';
-import { Public } from 'src/auth/constants';
+import { Public } from 'src/modules/auth/constants';
 @Controller('article')
 @UseFilters(new HttpExceptionFilter())
 export class ArticleController {

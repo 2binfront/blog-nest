@@ -14,6 +14,79 @@ export * from './asset-manage.dto';
 
 export const CliqueList = ['武侠小说', '古代诗人', '黑猫警长', '王者荣耀', '动漫人物'];
 
+export class Tag {
+  @ApiProperty({ description: '标签id', required: false })
+  @IsOptional()
+  @IsNumber()
+  @Type(() => Number)
+  id?: number;
+
+  @ApiProperty({ description: '标签名称', required: true })
+  @IsString()
+  name?: string;
+
+  @ApiProperty({ description: '标签排序', required: true })
+  @IsOptional()
+  @IsNumber()
+  @Type(() => Number)
+  sequence?: number;
+}
+
+export class Category {
+  @ApiProperty({ description: '分类id', required: false })
+  @IsOptional()
+  @IsNumber()
+  @Type(() => Number)
+  id?: number;
+
+  @ApiProperty({ description: '分类名称', required: false })
+  @IsOptional()
+  @IsString()
+  name?: string;
+
+  @ApiProperty({ description: '分类排序', required: false })
+  @IsOptional()
+  @IsNumber()
+  @Type(() => Number)
+  sequence?: number;
+}
+
+export class Post {
+  @ApiProperty({ description: '文章id', required: false })
+  @IsOptional()
+  @IsNumber()
+  @Type(() => Number)
+  id?: number;
+
+  @ApiProperty({ description: '文章标题', required: false })
+  @IsOptional()
+  @IsString()
+  title?: string;
+
+  @ApiProperty({ description: '文章内容', required: false })
+  @IsOptional()
+  @IsString()
+  content?: string;
+
+  @ApiProperty({ description: '文章分类', required: false })
+  @IsOptional()
+  @IsNumber()
+  @Type(() => Number)
+  category_id?: number;
+
+  @ApiProperty({ description: '文章标签', required: false })
+  @IsOptional()
+  @IsNumber()
+  @Type(() => Number)
+  tag_ids?: number;
+
+  @ApiProperty({ description: '文章排序', required: false })
+  @IsOptional()
+  @IsNumber()
+  @Type(() => Number)
+  sequence?: number;
+}
+
 export class QueryParamsDto {
   @IsOptional()
   @IsInt()

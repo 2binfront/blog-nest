@@ -9,6 +9,39 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+model tag {
+  create_date DateTime? @default(now()) @db.DateTime(6)
+  write_date  DateTime? @default(now()) @db.DateTime(6)
+  id          Int       @id @default(autoincrement())
+  name        String    @db.LongText
+  is_deleted  Boolean   @default(false)
+  sequence    Int       @default(0)
+  post        post[]
+}
+
+model category {
+  create_date DateTime? @default(now()) @db.DateTime(6)
+  write_date  DateTime? @default(now()) @db.DateTime(6)
+  id          Int       @id @default(autoincrement())
+  name        String    @db.LongText
+  is_deleted  Boolean   @default(false)
+  sequence    Int       @default(0)
+  post        post[]
+}
+
+model post {
+  create_date DateTime? @default(now()) @db.DateTime(6)
+  write_date  DateTime? @default(now()) @db.DateTime(6)
+  id          Int       @id @default(autoincrement())
+  title       String    @db.LongText
+  content     String    @db.LongText
+  is_deleted  Boolean   @default(false)
+  sequence    Int       @default(0)
+  tags        tag[]
+  category    category  @relation(fields: [categoryId], references: [id])
+  categoryId  Int
 }

@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { CategoryService } from './category.service';
-import { Public } from 'src/auth/constants';
+import { Public } from 'src/modules/auth/constants';
 import { CategoryDocument } from './category.schema';
 
 @Controller('category')
