@@ -20,7 +20,7 @@ model tag {
   name        String    @db.LongText
   is_deleted  Boolean   @default(false)
   sequence    Int       @default(0)
-  post        post[]
+  post        post[] @relation("PostToTag")
 }
 
 model category {
@@ -30,7 +30,7 @@ model category {
   name        String    @db.LongText
   is_deleted  Boolean   @default(false)
   sequence    Int       @default(0)
-  post        post[]
+  post        post[] 
 }
 
 model post {
@@ -41,7 +41,7 @@ model post {
   content     String    @db.LongText
   is_deleted  Boolean   @default(false)
   sequence    Int       @default(0)
-  tags        tag[]
+  tags        tag[] @relation("PostToTag")
   category    category  @relation(fields: [categoryId], references: [id])
   categoryId  Int
 }

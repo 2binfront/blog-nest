@@ -3,7 +3,7 @@ import { TagService } from './tag.service';
 import { Public } from 'src/modules/auth/constants';
 import { Tag } from 'src/dtos';
 
-@Controller('tag')
+@Controller()
 export class TagController {
   constructor(private readonly tagService: TagService) {}
 

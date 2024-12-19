@@ -1,77 +1,97 @@
 import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
-import { Article, ArticleMeta, ArticleContent, ArticleContentDocument, ArticleMetaDocument } from './article.schema';
 import { CategoryService } from 'src/modules/category/category.service';
 import { TagService } from 'src/modules/tag/tag.service';
+import { PrismaService } from 'src/common/prisma/prisma.service';
+import { Article } from 'src/dtos';
 @Injectable()
 export class ArticleService {
-  @InjectModel('ArticleMeta') private metaModel: Model<ArticleMetaDocument>;
-  @InjectModel('ArticleContent') private contentModel: Model<ArticleContentDocument>;
   constructor(
     private categoryService: CategoryService,
     private tagService: TagService,
+    private prisma: PrismaService,
   ) {}
   async create(createArticleDto: Article) {
-    try {
-      const { content, ...resArticle } = createArticleDto;
-      const { category, tags } = resArticle;
-      const categoryId = await this.categoryService.findOne(category);
-      const tagIds = await this.tagService.findMany(tags);
-      if (!categoryId && tagIds.length === 0) {
-        throw new BadRequestException('no category or tag found' + tagIds);
-      }
-      const res = await this.metaModel.create(resArticle);
-      const res2 = await this.contentModel.create({ articleId: res._id, content: content });
-      return res2;
-    } catch (error) {
-      throw new BadRequestException(error.message);
-    }
+    return await this.prisma.post.create({
+      data: {
+        title: createArticleDto.title,
+        category: {
+          connect: {
+            id: createArticleDto.category_id,
+          },
+        },
+        content: createArticleDto.content,
+        tags: {
+          connect: createArticleDto.tag_ids.map((tag) => ({ id: tag })),
+        },
+      },
+    });
   }
 
   async findAll() {
-    const res = await this.metaModel.find();
-    return res;
+    return await this.prisma.post.findMany({
+      where: {
+        is_deleted: false,
+      },
+      select: {
+        create_date: true,
+        write_date: true,
+        title: true,
+        category: true,
+        tags: true,
+        sequence: true,
+      },
+    });
   }
 
-  async findOne(id: string) {
-    const res1 = await this.contentModel.find({ articleId: id }).exec();
-    const res2 = await this.metaModel.find({ _id: id }).exec();
-    const { category, tags, updatedAt, createdAt, title, _id } = res2[0];
-    return {
-      content: res1[0].content,
-      category,
-      updatedAt,
-      tags,
-      title,
-      createdAt,
-      _id,
-    };
+  async findOne(id: number) {
+    return await this.prisma.post.findFirst({
+      where: {
+        id,
+        is_deleted: false,
+      },
+      select: {
+        create_date: true,
+        write_date: true,
+        title: true,
+        category: true,
+        tags: true,
+        sequence: true,
+        content: true,
+      },
+    });
   }
 
-  async update(id: string, updateArticleDto: Article) {
-    await this.metaModel
-      .updateOne(
-        { _id: id },
-        {
-          $set: {
-            title: updateArticleDto.title,
-            category: updateArticleDto.category,
-            tags: updateArticleDto.tags,
+  async update(id: number, updateArticleDto: Article) {
+    return await this.prisma.post.update({
+      where: {
+        id,
+        is_deleted: false,
+      },
+      data: {
+        title: updateArticleDto.title,
+        category: {
+          connect: {
+            id: updateArticleDto.category_id,
           },
         },
-      )
-      .exec();
-    const res = await this.contentModel.updateOne({ articleId: id }, updateArticleDto).exec();
-    return res;
+        content: updateArticleDto.content,
+        tags: {
+          connect: updateArticleDto.tag_ids.map((tag) => ({ id: tag })),
+        },
+      },
+    });
   }
 
-  async remove(id: string) {
-    const res = await this.contentModel.deleteOne({ articleId: id }).exec();
-    const res2 = await this.metaModel.deleteOne({ _id: id }).exec();
-    if (res2.deletedCount === 0) {
-      throw new NotFoundException(`Article with ID ${id} not found`);
-    }
-    return { deleted: true };
+  async remove(id: number) {
+    return await this.prisma.post.update({
+      where: {
+        id,
+      },
+      data: {
+        is_deleted: true,
+      },
+    });
   }
 }

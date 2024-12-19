@@ -15,48 +15,48 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
       log: ['info'],
     });
 
-    // 添加扩展，计算属性、中间件
-    const extendedClient = this.$extends({
-      name: 'commodity_realCost',
-      result: {
-        cp_commodity: {
-          discount_cost: {
-            needs: { discount: true, cost: true },
-            compute({ discount, cost }) {
-              return discount * cost || 0;
-            },
-          },
-        },
-      },
-    })
-      .$extends({
-        name: 'mobile_image',
-        result: {
-          cp_image: {
-            mobile_image: {
-              needs: { origin_url: true },
-              compute({ origin_url }) {
-                return `${configService.get('DOMAIN')}/${origin_url}?imageMogr2/auto-orient`;
-              },
-            },
-          },
-        },
-      })
-      .$extends({
-        name: 'forum_article_expiring_date',
-        result: {
-          cp_forum_article: {
-            expiring_date: {
-              needs: { expiring_day: true, publish_date: true },
-              compute({ expiring_day, publish_date }) {
-                return new Date(new Date(publish_date).getTime() + expiring_day * 24 * 60 * 60 * 1000);
-              },
-            },
-          },
-        },
-      });
+    // // 添加扩展，计算属性、中间件
+    // const extendedClient = this.$extends({
+    //   name: 'commodity_realCost',
+    //   result: {
+    //     cp_commodity: {
+    //       discount_cost: {
+    //         needs: { discount: true, cost: true },
+    //         compute({ discount, cost }) {
+    //           return discount * cost || 0;
+    //         },
+    //       },
+    //     },
+    //   },
+    // })
+    //   .$extends({
+    //     name: 'mobile_image',
+    //     result: {
+    //       cp_image: {
+    //         mobile_image: {
+    //           needs: { origin_url: true },
+    //           compute({ origin_url }) {
+    //             return `${configService.get('DOMAIN')}/${origin_url}?imageMogr2/auto-orient`;
+    //           },
+    //         },
+    //       },
+    //     },
+    //   })
+    //   .$extends({
+    //     name: 'forum_article_expiring_date',
+    //     result: {
+    //       cp_forum_article: {
+    //         expiring_date: {
+    //           needs: { expiring_day: true, publish_date: true },
+    //           compute({ expiring_day, publish_date }) {
+    //             return new Date(new Date(publish_date).getTime() + expiring_day * 24 * 60 * 60 * 1000);
+    //           },
+    //         },
+    //       },
+    //     },
+    //   });
 
-    Object.assign(this, extendedClient);
+    // Object.assign(this, extendedClient);
   }
 
   // 仅应用创建时调用一次

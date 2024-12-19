@@ -1,9 +1,9 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { Public } from 'src/modules/auth/constants';
-import { CategoryDocument } from './category.schema';
+import { Category } from 'src/dtos';
 
-@Controller('category')
+@Controller()
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
   @Public()
@@ -13,12 +13,17 @@ export class CategoryController {
   }
 
   @Post()
-  createCategory(@Body() category: CategoryDocument) {
+  createCategory(@Body() category: Category) {
     return this.categoryService.create(category);
   }
 
   @Patch()
-  updateCategory(@Param() id: string, @Body() category: CategoryDocument) {
-    return this.categoryService.patchCategory(id, category);
+  updateCategory(@Param() id: string, @Body() category: Category) {
+    return this.categoryService.patchCategory(+id, category);
+  }
+
+  @Delete()
+  deleteCategory(@Param() id: string) {
+    return this.categoryService.delete(+id);
   }
 }

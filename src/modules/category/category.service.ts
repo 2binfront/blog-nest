@@ -1,26 +1,51 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CategoryDocument } from './category.schema';
+import { PrismaService } from 'src/common/prisma/prisma.service';
+import { Category } from 'src/dtos';
 
 @Injectable()
 export class CategoryService {
-  @InjectModel('Category') private categoryModel: Model<CategoryDocument>;
+  constructor(private prisma: PrismaService) {}
 
-  getCategories() {
-    return this.categoryModel.find().exec();
+  async getCategories() {
+    return await this.prisma.category.findMany({
+      where: {
+        is_deleted: false,
+      },
+    });
   }
 
-  create(category: CategoryDocument) {
-    const res = this.categoryModel.insertMany(category);
+  async create(category: Category) {
+    const res = this.prisma.category.create({
+      data: {
+        name: category.name,
+        sequence: category.sequence,
+      },
+    });
     return res;
   }
 
-  patchCategory(id: string, category: CategoryDocument) {
-    return this.categoryModel.findByIdAndUpdate(id, category, { new: true });
+  async patchCategory(id: number, category: Category) {
+    return await this.prisma.category.update({
+      where: {
+        id,
+      },
+      data: {
+        name: category.name,
+        sequence: category.sequence,
+      },
+    });
   }
 
-  findOne(id: string) {
-    return this.categoryModel.findById(id).exec();
+  async delete(id: number) {
+    return await this.prisma.category.update({
+      where: {
+        id,
+      },
+      data: {
+        is_deleted: true,
+      },
+    });
   }
 }

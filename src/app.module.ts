@@ -19,6 +19,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import configuration from './config/configuration';
 import { PrismaModule } from './common/prisma/prisma.module';
+import { RouterModule } from '@nestjs/core';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -31,6 +32,15 @@ import { PrismaModule } from './common/prisma/prisma.module';
     }),
     WinstonModule.forRoot({
       // options
+      levels: {
+        error: 0,
+        warn: 1,
+        http: 2,
+        debug: 3,
+        info: 4,
+        verbose: 5,
+        silly: 6,
+      },
       format: winston.format.combine(
         winston.format.timestamp({
           format: 'YYYY-MM-DD HH:mm:ss',
@@ -39,28 +49,43 @@ import { PrismaModule } from './common/prisma/prisma.module';
       ),
       transports: [
         new winston.transports.Console({
-          level: 'verbose',
-          format: winston.format.combine(winston.format.timestamp()),
+          level: 'silly',
+          format: winston.format.combine(
+            winston.format.colorize({
+              all: true,
+              colors: {
+                error: 'red',
+                warn: 'yellow',
+                http: 'green',
+                info: 'white',
+                verbose: 'cyan',
+                debug: 'blue',
+                silly: 'magenta',
+              },
+            }),
+            winston.format.timestamp(),
+          ),
         }),
-        // //   保存到数据库
-        // new WinstonMongodb.MongoDB({
-        //   level: process.env.WINSTON_LOGGER_LEVEL_MONGO || 'verbose',
-        //   db: `mongodb://${process.env.MONGO_HOST || '127.0.0.1'}:${process.env.MONGO_PORT || 21017}/${process.env.MONGO_DATABASE_WINSTON || 'app-log'}`,
-        //   options: { useNewUrlParser: true, useUnifiedTopology: true },
-        // }),
-        // // 输出文件
+        // 输出到文件
         new winston.transports.File({
-          //定义输出日志文件
           filename: 'logFile/combined.log',
-          level: 'http',
+          level: 'silly',
         }),
+        // 太多了浪费空间影响性能，有一个combined够用了
         // new winston.transports.File({
-        //   filename: 'logFile/errors.log',
-        //   level: 'error',
+        //   filename: 'logFile/http.log',
+        //   level: 'http',
+        //   format: winston.format((info) => (info.level === 'http' ? info : false))(),
         // }),
         // new winston.transports.File({
         //   filename: 'logFile/warning.log',
-        //   level: 'warning',
+        //   level: 'warn',
+        //   format: winston.format((info) => (info.level === 'warn' ? info : false))(),
+        // }),
+        // new winston.transports.File({
+        //   filename: 'logFile/errors.log',
+        //   level: 'error',
+        //   format: winston.format((info) => (info.level === 'error' ? info : false))(),
         // }),
       ],
       // 未捕获的异常
@@ -86,7 +111,29 @@ import { PrismaModule } from './common/prisma/prisma.module';
     //   }),
     //   inject: [ConfigService],
     // }),
-
+    RouterModule.register([
+      {
+        path: 'api/blog',
+        children: [
+          {
+            path: 'auth',
+            module: AuthModule,
+          },
+          {
+            path: 'tag',
+            module: TagModule,
+          },
+          {
+            path: 'category',
+            module: CategoryModule,
+          },
+          {
+            path: 'article',
+            module: ArticleModule,
+          },
+        ],
+      },
+    ]),
     AuthModule,
     ArticleModule,
     UsersModule,

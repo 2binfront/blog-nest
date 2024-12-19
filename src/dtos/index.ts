@@ -51,7 +51,7 @@ export class Category {
   sequence?: number;
 }
 
-export class Post {
+export class Article {
   @ApiProperty({ description: '文章id', required: false })
   @IsOptional()
   @IsNumber()
@@ -76,9 +76,7 @@ export class Post {
 
   @ApiProperty({ description: '文章标签', required: false })
   @IsOptional()
-  @IsNumber()
-  @Type(() => Number)
-  tag_ids?: number;
+  tag_ids?: number[];
 
   @ApiProperty({ description: '文章排序', required: false })
   @IsOptional()

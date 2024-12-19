@@ -15,9 +15,11 @@ export class TagService {
 
   async createTags(tags: Tag[]) {
     return await this.prisma.tag.createMany({
-      data: tags.map((tag) => ({
-        name: tag.name,
-      })),
+      data: tags.length
+        ? tags.map((tag) => ({
+            name: tag.name,
+          }))
+        : { name: (tags as any).name },
     });
   }
 
