@@ -9,7 +9,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     super({
       datasources: {
         db: {
-          url: `${configService.get<string>('database.type')}://${configService.get<string>('database.user')}:${configService.get<string>('database.pwd')}@${configService.get<string>('database.host')}:${configService.get<string>('database.port')}/${configService.get<string>('database.db')}?connection_limit=100`,
+          url: `postgresql://${configService.get<string>('database.user')}:${configService.get<string>('database.pwd')}@${configService.get<string>('database.host')}:${configService.get<string>('database.port')}/${configService.get<string>('database.db')}?schema=public`,
         },
       },
       log: ['info'],

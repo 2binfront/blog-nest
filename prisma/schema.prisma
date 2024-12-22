@@ -9,39 +9,39 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model tag {
-  create_date DateTime? @default(now()) @db.DateTime(6)
-  write_date  DateTime? @default(now()) @db.DateTime(6)
+  create_date DateTime? @default(now()) @db.Timestamp(6)
+  write_date  DateTime? @default(now()) @db.Timestamp(6)
   id          Int       @id @default(autoincrement())
-  name        String    @db.LongText
+  name        String    @db.Text
   is_deleted  Boolean   @default(false)
   sequence    Int       @default(0)
-  post        post[] @relation("PostToTag")
+  post        post[]    @relation("PostToTag")
 }
 
 model category {
-  create_date DateTime? @default(now()) @db.DateTime(6)
-  write_date  DateTime? @default(now()) @db.DateTime(6)
+  create_date DateTime? @default(now()) @db.Timestamp(6)
+  write_date  DateTime? @default(now()) @db.Timestamp(6)
   id          Int       @id @default(autoincrement())
-  name        String    @db.LongText
+  name        String    @db.Text
   is_deleted  Boolean   @default(false)
   sequence    Int       @default(0)
-  post        post[] 
+  post        post[]
 }
 
 model post {
-  create_date DateTime? @default(now()) @db.DateTime(6)
-  write_date  DateTime? @default(now()) @db.DateTime(6)
+  create_date DateTime? @default(now()) @db.Timestamp(6)
+  write_date  DateTime? @default(now()) @db.Timestamp(6)
   id          Int       @id @default(autoincrement())
-  title       String    @db.LongText
-  content     String    @db.LongText
+  title       String    @db.Text
+  content     String    @db.Text
   is_deleted  Boolean   @default(false)
   sequence    Int       @default(0)
-  tags        tag[] @relation("PostToTag")
+  tags        tag[]     @relation("PostToTag")
   category    category  @relation(fields: [categoryId], references: [id])
   categoryId  Int
 }
