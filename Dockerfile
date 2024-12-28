@@ -8,7 +8,6 @@ WORKDIR /app
 COPY package*.json ./
 
 ENV NODE_ENV production
-RUN npm config set registry https://registry.npmmirror.com
 # 安装项目依赖
 RUN npm i -g pnpm
 
