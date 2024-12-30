@@ -1,0 +1,1 @@
+import{_ as e}from"./DlAUqK2U.js";import{o as c,c as o}from"./B4nhvq4f.js";const r={},s={class:""};function t(a,n){return c(),o("div",s,"this is archive page ")}const f=e(r,[["render",t]]);export{f as default};

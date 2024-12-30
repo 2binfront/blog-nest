@@ -28,7 +28,7 @@ import { RouterModule } from '@nestjs/core';
     }),
     PrismaModule,
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '../client/public'),
+      rootPath: join(__dirname, '../client/dist'),
     }),
     WinstonModule.forRoot({
       // options
