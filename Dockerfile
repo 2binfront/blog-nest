@@ -1,15 +1,26 @@
 # 使用 Node.js 官方镜像作为基础镜像
-FROM node:20-alpine
+FROM node:20.18.1  AS base
 
 # 设置工作目录
 WORKDIR /app
 
 # 复制 package.json 和 package-lock.json
 COPY package*.json ./
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
+RUN corepack prepare pnpm@9.0.6 --activate
+
+COPY . /app
+WORKDIR /app
 
 ENV NODE_ENV production
-# 安装项目依赖
-RUN npm i -g pnpm
+# 构建环境依赖
+FROM base AS build
+# RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+RUN  pnpm install --frozen-lockfile
+RUN pnpm run build
+
 
 #Set shell to sh
 #SHELL ["/bin/sh", "-c"]
@@ -19,22 +30,15 @@ RUN npm i -g pnpm
 # Set the global bin directory to the PATH
 #ENV PNPM_HOME="/root/.local/share/pnpm"
 #ENV PATH="$PNPM_HOME:$PATH"
+# 准备生产环境，剥离 devDependencies
+RUN pnpm prune --prod
 
-RUN npm install -g @nestjs/cli
-
-# 安装项目依赖
-RUN pnpm i
-
-RUN pnpm i express
-
-# 复制项目文件
-COPY . .
-
-# 编译 TypeScript 代码
-RUN npm run build
+#
 
 # 暴露应用程序端口
 EXPOSE 3001
 
+
 # 启动应用程序
-CMD ["npm","run","start:prod"]
+
+CMD ["pnpm","start:prod"]

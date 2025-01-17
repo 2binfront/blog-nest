@@ -35,6 +35,7 @@ export class ArticleService {
         is_deleted: false,
       },
       select: {
+        id: true,
         create_date: true,
         write_date: true,
         title: true,
