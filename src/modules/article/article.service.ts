@@ -43,6 +43,9 @@ export class ArticleService {
         tags: true,
         sequence: true,
       },
+      orderBy: {
+        create_date: 'desc',
+      },
     });
   }
 
