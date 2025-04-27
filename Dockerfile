@@ -1,44 +1,41 @@
-# 使用 Node.js 官方镜像作为基础镜像
-FROM node:20.18.1  AS base
-
-# 设置工作目录
+# 基础阶段：设置 Node.js 环境
+FROM node:20.18.1 AS base
 WORKDIR /app
 
-# 复制 package.json 和 package-lock.json
-COPY package*.json ./
+# 设置 pnpm
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
 RUN corepack prepare pnpm@9.0.6 --activate
 
-COPY . /app
+# 构建阶段：安装依赖并构建应用
+FROM base AS build
 WORKDIR /app
 
-ENV NODE_ENV production
-# 构建环境依赖
-FROM base AS build
-# RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
-RUN  pnpm install --frozen-lockfile
+# 先只复制包管理文件以利用缓存
+COPY package.json pnpm-lock.yaml* ./
+# 使用缓存安装依赖
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+
+# 复制源代码并构建
+COPY . .
 RUN pnpm run build
 
+# 生产阶段：准备最小化的生产镜像
+FROM base AS production
+WORKDIR /app
 
-#Set shell to sh
-#SHELL ["/bin/sh", "-c"]
-# Ensure the pnpm global bin directory is set up
-#RUN pnpm setup
+# 设置生产环境
+ENV NODE_ENV=production
 
-# Set the global bin directory to the PATH
-#ENV PNPM_HOME="/root/.local/share/pnpm"
-#ENV PATH="$PNPM_HOME:$PATH"
-# 准备生产环境，剥离 devDependencies
-RUN pnpm prune --prod
+# 复制 package.json 和 lock 文件
+COPY package.json pnpm-lock.yaml* ./
+# 复制构建产物
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/node_modules ./node_modules
 
-#
+# 可选：如果你想进一步优化，可以只安装生产依赖
+# RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile
 
-# 暴露应用程序端口
 EXPOSE 3001
-
-
-# 启动应用程序
-
-CMD ["pnpm","start:prod"]
+CMD ["pnpm", "start:prod"]
