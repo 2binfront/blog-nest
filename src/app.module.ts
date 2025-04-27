@@ -20,6 +20,7 @@ import { join } from 'path';
 import configuration from './config/configuration';
 import { PrismaModule } from './common/prisma/prisma.module';
 import { RouterModule } from '@nestjs/core';
+import { RssModule } from './modules/rss/rss.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -133,12 +134,17 @@ import { RouterModule } from '@nestjs/core';
           },
         ],
       },
+      {
+        path: '',
+        module: RssModule,
+      },
     ]),
     AuthModule,
     ArticleModule,
     UsersModule,
     TagModule,
     CategoryModule,
+    RssModule,
   ],
   controllers: [AppController],
   providers: [AppService],
