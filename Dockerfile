@@ -31,6 +31,9 @@ RUN pnpm install --frozen-lockfile
 # 复制源代码（可以使用 .dockerignore 排除不需要的文件）
 COPY . .
 
+
+RUN pnpx prisma generate
+
 # 构建应用
 RUN pnpm run build
 
