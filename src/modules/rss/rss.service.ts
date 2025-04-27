@@ -11,7 +11,11 @@ export class RssService {
   async generateRssFeed(): Promise<string> {
     // 获取博客的基本信息
     const siteUrl = 'https://2binfront.com';
-    const posts = await this.prisma.post.findMany(); // 获取所有文章
+    const posts = await this.prisma.post.findMany({
+      where: {
+        is_deleted: false,
+      },
+    }); // 获取所有文章
 
     // 创建Feed实例
     const feed = new Feed({
