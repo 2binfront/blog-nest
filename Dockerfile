@@ -1,41 +1,58 @@
-# 基础阶段：设置 Node.js 环境
+# 使用 Node.js 官方镜像作为基础镜像
 FROM node:20.18.1 AS base
+
+# 设置工作目录
 WORKDIR /app
 
-# 设置 pnpm
+ENV DATABASE_URL="postgresql://postgres:123456@localhost:5432/app?schema=public"
+ENV POSTGRES_HOST=localhost
+ENV POSTGRES_PORT=5432
+ENV POSTGRES_USER=postgres
+ENV POSTGRES_PASSWORD=123456
+ENV POSTGRES_DATABASE=app
+ENV JWT_SECRET=123456
+ENV PASSWORD=123456
+
+
+# 设置 PNPM
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
 RUN corepack prepare pnpm@9.0.6 --activate
 
-# 构建阶段：安装依赖并构建应用
+# 构建阶段
 FROM base AS build
 WORKDIR /app
 
-# 先只复制包管理文件以利用缓存
-COPY package.json pnpm-lock.yaml* ./
-# 使用缓存安装依赖
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+# 先复制 package.json 和 lockfile 以利用缓存
+COPY package*.json pnpm-lock.yaml* ./
+RUN pnpm install --frozen-lockfile
 
-# 复制源代码并构建
+# 复制源代码（可以使用 .dockerignore 排除不需要的文件）
 COPY . .
+
+# 构建应用
 RUN pnpm run build
 
-# 生产阶段：准备最小化的生产镜像
+# 生产阶段
 FROM base AS production
 WORKDIR /app
 
 # 设置生产环境
-ENV NODE_ENV=production
+ENV NODE_ENV production
 
-# 复制 package.json 和 lock 文件
-COPY package.json pnpm-lock.yaml* ./
-# 复制构建产物
+# 复制 package.json 和 lockfile
+COPY package*.json pnpm-lock.yaml* ./
+
+# 明确复制环境文件（如果需要）
+COPY .env* ./
+
+# 复制构建后的文件和依赖
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/node_modules ./node_modules
 
-# 可选：如果你想进一步优化，可以只安装生产依赖
-# RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile
-
+# 暴露应用程序端口
 EXPOSE 3001
+
+# 启动应用程序
 CMD ["pnpm", "start:prod"]
