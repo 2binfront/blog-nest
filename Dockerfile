@@ -4,14 +4,14 @@ FROM node:20.18.1 AS base
 # 设置工作目录
 WORKDIR /app
 
-ENV DATABASE_URL="postgresql://postgres:123456@localhost:5432/app?schema=public"
+ENV DATABASE_URL="postgresql://postgres:123456@host.docker.internal:5432/app?schema=public"
 ENV POSTGRES_HOST=localhost
 ENV POSTGRES_PORT=5432
 ENV POSTGRES_USER=postgres
-ENV POSTGRES_PASSWORD=123456
+ENV POSTGRES_PASSWORD=""
 ENV POSTGRES_DATABASE=app
-ENV JWT_SECRET=123456
-ENV PASSWORD=123456
+ENV JWT_SECRET=""
+ENV PASSWORD=""
 
 
 # 设置 PNPM
