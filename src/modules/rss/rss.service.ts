@@ -19,13 +19,13 @@ export class RssService {
 
     // 创建Feed实例
     const feed = new Feed({
-      title: '你的博客名称',
-      description: '博客的描述信息',
+      title: '2binfront',
+      description: 'Good Luck and Have Fun!',
       id: siteUrl,
       link: siteUrl,
       language: 'zh', // 或其他语言
       favicon: `${siteUrl}/favicon.ico`,
-      copyright: `All rights reserved ${new Date().getFullYear()}`,
+      copyright: `All rights reserved 2024-${new Date().getFullYear()}`,
       updated: posts.length > 0 ? new Date(posts[0].write_date) : new Date(),
       author: {
         name: '你的名字',
