@@ -135,7 +135,7 @@ import { RssModule } from './modules/rss/rss.module';
         ],
       },
       {
-        path: '',
+        path: 'api',
         module: RssModule,
       },
     ]),

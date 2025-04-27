@@ -4,8 +4,8 @@ FROM node:20.18.1 AS base
 # 设置工作目录
 WORKDIR /app
 
-ENV DATABASE_URL="postgresql://postgres:123456@127.0.0.1:5432/app?schema=public"
-ENV POSTGRES_HOST=127.0.0.1
+ENV DATABASE_URL="postgresql://postgres:123456@host.docker.internal:5432/app?schema=public"
+ENV POSTGRES_HOST=host.docker.internal
 ENV POSTGRES_PORT=5432
 ENV POSTGRES_USER=postgres
 ENV POSTGRES_PASSWORD=""
