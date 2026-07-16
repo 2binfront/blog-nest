@@ -1,8 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseFilters } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseFilters, Query } from '@nestjs/common';
 import { ArticleService } from './article.service';
 import { HttpExceptionFilter } from '../../common/filters/http-exception.filter';
 import { Public } from 'src/modules/auth/constants';
-import { Article } from 'src/dtos';
+import { Article, ArticleQuery } from 'src/dtos';
 @Controller()
 @UseFilters(new HttpExceptionFilter())
 export class ArticleController {
@@ -15,8 +15,8 @@ export class ArticleController {
 
   @Public()
   @Get()
-  findAll() {
-    return this.articleService.findAll();
+  findAll(@Query() query: ArticleQuery) {
+    return this.articleService.findAll(query);
   }
 
   @Public()

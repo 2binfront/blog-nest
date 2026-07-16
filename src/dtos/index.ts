@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
-import { IsBoolean, IsInt, IsNumber, IsOptional, IsPositive, IsString, Min } from 'class-validator';
+import { IsArray, IsBoolean, IsInt, IsNumber, IsOptional, IsPositive, IsString, Max, Min } from 'class-validator';
 
 export * from './oa.dto';
 export * from './commodity.dto';
@@ -76,6 +76,9 @@ export class Article {
 
   @ApiProperty({ description: '文章标签', required: false })
   @IsOptional()
+  @IsArray()
+  @IsInt({ each: true })
+  @Type(() => Number)
   tag_ids?: number[];
 
   @ApiProperty({ description: '文章排序', required: false })
@@ -83,6 +86,37 @@ export class Article {
   @IsNumber()
   @Type(() => Number)
   sequence?: number;
+}
+
+export class ArticleQuery {
+  @ApiProperty({ description: '页码，从 1 开始', required: false, default: 1 })
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Type(() => Number)
+  page: number = 1;
+
+  @ApiProperty({ description: '每页条数', required: false, default: 10, maximum: 100 })
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(100)
+  @Type(() => Number)
+  pageSize: number = 10;
+
+  @ApiProperty({ description: '分类 ID', required: false })
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Type(() => Number)
+  categoryId?: number;
+
+  @ApiProperty({ description: '标签 ID', required: false })
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Type(() => Number)
+  tagId?: number;
 }
 
 export class QueryParamsDto {

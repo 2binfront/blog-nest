@@ -4,7 +4,7 @@ import mongoose, { Model } from 'mongoose';
 import { CategoryService } from 'src/modules/category/category.service';
 import { TagService } from 'src/modules/tag/tag.service';
 import { PrismaService } from 'src/common/prisma/prisma.service';
-import { Article } from 'src/dtos';
+import { Article, ArticleQuery } from 'src/dtos';
 @Injectable()
 export class ArticleService {
   constructor(
@@ -23,30 +23,47 @@ export class ArticleService {
         },
         content: createArticleDto.content,
         tags: {
-          connect: createArticleDto.tag_ids.map((tag) => ({ id: tag })),
+          connect: (createArticleDto.tag_ids ?? []).map((tag) => ({ id: tag })),
         },
       },
     });
   }
 
-  async findAll() {
-    return await this.prisma.post.findMany({
-      where: {
-        is_deleted: false,
-      },
-      select: {
-        id: true,
-        create_date: true,
-        write_date: true,
-        title: true,
-        category: true,
-        tags: true,
-        sequence: true,
-      },
-      orderBy: {
-        create_date: 'desc',
-      },
-    });
+  async findAll(query: ArticleQuery) {
+    const page = query.page ?? 1;
+    const pageSize = query.pageSize ?? 10;
+    const where = {
+      is_deleted: false,
+      ...(query.categoryId ? { categoryId: query.categoryId } : {}),
+      ...(query.tagId ? { tags: { some: { id: query.tagId } } } : {}),
+    };
+
+    const [items, total] = await this.prisma.$transaction([
+      this.prisma.post.findMany({
+        where,
+        select: {
+          id: true,
+          create_date: true,
+          write_date: true,
+          title: true,
+          category: true,
+          tags: true,
+          sequence: true,
+        },
+        orderBy: [{ create_date: 'desc' }, { id: 'desc' }],
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+      this.prisma.post.count({ where }),
+    ]);
+
+    return {
+      items,
+      total,
+      page,
+      pageSize,
+      totalPages: Math.ceil(total / pageSize),
+    };
   }
 
   async findOne(id: number) {
@@ -56,6 +73,7 @@ export class ArticleService {
         is_deleted: false,
       },
       select: {
+        id: true,
         create_date: true,
         write_date: true,
         title: true,
@@ -81,9 +99,20 @@ export class ArticleService {
           },
         },
         content: updateArticleDto.content,
+        write_date: new Date(),
         tags: {
-          connect: updateArticleDto.tag_ids.map((tag) => ({ id: tag })),
+          set: (updateArticleDto.tag_ids ?? []).map((tag) => ({ id: tag })),
         },
+      },
+      select: {
+        id: true,
+        create_date: true,
+        write_date: true,
+        title: true,
+        category: true,
+        tags: true,
+        sequence: true,
+        content: true,
       },
     });
   }
