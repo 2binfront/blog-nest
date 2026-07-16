@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Patch, Param, Delete } from '@nestjs/common';
+import { Body, Controller, Get, Post, Patch, Delete, Query } from '@nestjs/common';
 import { TagService } from './tag.service';
 import { Public } from 'src/modules/auth/constants';
 import { Tag } from 'src/dtos';
@@ -14,17 +14,17 @@ export class TagController {
   }
 
   @Post()
-  createTags(@Body() tags: Tag[]) {
-    return this.tagService.createTags(tags);
+  createTags(@Body() tag: Tag) {
+    return this.tagService.createTags(tag);
   }
 
   @Patch()
-  updateTag(@Param() id: string, @Body() tag: Tag) {
+  updateTag(@Query('id') id: string, @Body() tag: Tag) {
     return this.tagService.patchTag(+id, tag);
   }
 
   @Delete()
-  deleteTag(@Param() id: string) {
+  deleteTag(@Query('id') id: string) {
     return this.tagService.deleteTag(+id);
   }
 }

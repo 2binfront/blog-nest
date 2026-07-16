@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Patch, Post, Query } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { Public } from 'src/modules/auth/constants';
 import { Category } from 'src/dtos';
@@ -18,12 +18,12 @@ export class CategoryController {
   }
 
   @Patch()
-  updateCategory(@Param() id: string, @Body() category: Category) {
+  updateCategory(@Query('id') id: string, @Body() category: Category) {
     return this.categoryService.patchCategory(+id, category);
   }
 
   @Delete()
-  deleteCategory(@Param() id: string) {
+  deleteCategory(@Query('id') id: string) {
     return this.categoryService.delete(+id);
   }
 }
