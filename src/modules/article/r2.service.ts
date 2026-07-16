@@ -19,7 +19,10 @@ export class R2Service {
     const accessKeyId = this.config.get<string>('R2_ACCESS_KEY_ID');
     const secretAccessKey = this.config.get<string>('R2_SECRET_ACCESS_KEY');
     this.bucket = this.config.get<string>('R2_BUCKET_NAME') ?? '';
-    this.publicUrl = (this.config.get<string>('R2_PUBLIC_URL') ?? '').replace(/\/$/, '');
+    const configuredPublicUrl = (this.config.get<string>('R2_PUBLIC_URL') ?? '').trim().replace(/\/$/, '');
+    this.publicUrl = configuredPublicUrl && !/^https?:\/\//i.test(configuredPublicUrl)
+      ? `https://${configuredPublicUrl}`
+      : configuredPublicUrl;
     this.endpoint = accountId ? `https://${accountId}.r2.cloudflarestorage.com` : '';
     this.client = accountId && accessKeyId && secretAccessKey && this.bucket
       ? new S3Client({
@@ -54,7 +57,14 @@ export class R2Service {
     }
 
     const extension = file.mimetype === 'image/jpeg' ? '.jpg' : `.${file.mimetype.slice(6)}`;
-    const key = `articles/${ownerId}/${new Date().toISOString().slice(0, 10)}/${randomUUID()}${extension}`;
+    const uploadDate = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Asia/Shanghai',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).format(new Date());
+    const imageId = randomUUID();
+    const key = `blog/${uploadDate}/${imageId}${extension}`;
     try {
       await this.client.send(new PutObjectCommand({
         Bucket: this.bucket,
