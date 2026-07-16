@@ -32,7 +32,7 @@ RUN pnpm install --frozen-lockfile
 COPY . .
 
 
-RUN pnpx prisma generate
+RUN pnpm exec prisma generate
 
 # 构建应用
 RUN pnpm run build
