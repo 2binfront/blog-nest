@@ -12,6 +12,13 @@ export class LoggerMiddleware implements NestMiddleware {
     // 3. 重写 send 方法以捕获响应数据
     // Do not capture request or response bodies: they may contain secrets.
 
+    // const originalSend = res.send;
+    // let responseBody: any;
+    // res.send = (body: any) => {
+    //   responseBody = body;
+    //   return originalSend.call(res, body);
+    // };
+
     // 4. 监听 'finish' 事件以获取响应状态码和内容
     res.on('finish', () => {
       const metadata = {
@@ -19,6 +26,8 @@ export class LoggerMiddleware implements NestMiddleware {
         // auth: req.headers.authorization,
         url: req.originalUrl,
         statusCode: res.statusCode,
+        // body: req.body,
+        // response: responseBody,
       };
       this.logger.http({
         message: 'HttpRequest',

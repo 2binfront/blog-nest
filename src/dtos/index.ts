@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
-import { IsArray, IsBoolean, IsInt, IsNumber, IsOptional, IsPositive, IsString, Max, Min } from 'class-validator';
+import { IsArray, IsBoolean, IsIn, IsInt, IsNumber, IsOptional, IsPositive, IsString, Max, MaxLength, Min, MinLength } from 'class-validator';
 
 export * from './oa.dto';
 export * from './commodity.dto';
@@ -117,6 +117,23 @@ export class ArticleQuery {
   @Min(1)
   @Type(() => Number)
   tagId?: number;
+}
+
+export class ImageUploadQuery {
+  @IsString()
+  @IsIn(['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
+  contentType: string;
+
+  @IsInt()
+  @Min(1)
+  @Max(10 * 1024 * 1024)
+  @Type(() => Number)
+  size: number;
+
+  @IsString()
+  @MinLength(1)
+  @MaxLength(120)
+  fileName: string;
 }
 
 export class QueryParamsDto {
