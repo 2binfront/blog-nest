@@ -20,6 +20,7 @@ export class ArticleService {
           title: createArticleDto.title,
           category: { connect: { id: createArticleDto.category_id } },
           content: createArticleDto.content,
+          content_en: createArticleDto.content_en?.trim() || null,
           tags: { connect: (createArticleDto.tag_ids ?? []).map((tag) => ({ id: tag })) },
           write_date: new Date(),
           create_date: new Date(),
@@ -93,6 +94,7 @@ export class ArticleService {
         tags: true,
         sequence: true,
         content: true,
+        content_en: true,
       },
     });
   }
@@ -112,6 +114,7 @@ export class ArticleService {
           },
         },
         content: updateArticleDto.content,
+        content_en: updateArticleDto.content_en?.trim() || null,
         write_date: new Date(),
         tags: {
           set: (updateArticleDto.tag_ids ?? []).map((tag) => ({ id: tag })),
@@ -126,6 +129,7 @@ export class ArticleService {
         tags: true,
         sequence: true,
         content: true,
+        content_en: true,
       },
     });
   }

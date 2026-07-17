@@ -68,6 +68,11 @@ export class Article {
   @IsString()
   content?: string;
 
+  @ApiProperty({ description: '文章英文内容', required: false })
+  @IsOptional()
+  @IsString()
+  content_en?: string;
+
   @ApiProperty({ description: '文章分类', required: false })
   @IsOptional()
   @IsNumber()

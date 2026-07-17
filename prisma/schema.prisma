@@ -39,6 +39,7 @@ model post {
   id          Int       @id @default(autoincrement())
   title       String    @db.Text
   content     String    @db.Text
+  content_en  String?   @db.Text
   is_deleted  Boolean   @default(false)
   sequence    Int       @default(0)
   tags        tag[]     @relation("PostToTag")
