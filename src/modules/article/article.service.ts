@@ -43,8 +43,10 @@ export class ArticleService {
   }
 
   async findAll(query: ArticleQuery) {
-    const page = query.page ?? 1;
-    const pageSize = query.pageSize ?? 10;
+    // DTO validation handles normal requests; these guards also keep the service
+    // safe when it is called directly (for example from a test or another service).
+    const page = Number.isInteger(query.page) && query.page > 0 ? query.page : 1;
+    const pageSize = Number.isInteger(query.pageSize) && query.pageSize > 0 ? query.pageSize : 10;
     const where = {
       is_deleted: false,
       ...(query.categoryId ? { categoryId: query.categoryId } : {}),
